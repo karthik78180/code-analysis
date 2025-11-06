@@ -1,0 +1,36 @@
+# Gradle
+.gradle/
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+out/
+target/
+bin/
+
+# Temporary files
+*.log
+*.tmp
+*.swp
+*~
+
+# Dependency analysis cache
+build/dependency-analysis-cache/
+build/dependency-sources/
+build/tmp/dependency-analysis/

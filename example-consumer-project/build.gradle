@@ -1,0 +1,109 @@
+plugins {
+    id 'java'
+    id 'com.yourcompany.platform-standards' version '1.0.0'
+}
+
+group = 'com.example'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        url = 'https://artifactory.yourcompany.com/maven-internal'
+    }
+}
+
+dependencies {
+    // Vert.x dependencies
+    implementation 'io.vertx:vertx-core:4.4.6'
+
+    // Example: Internal wrapper library that might have violations
+    implementation 'com.yourcompany.wrappers:vertx-utils:1.2.3'
+    implementation 'com.yourcompany.wrappers:database-helper:2.0.1'
+
+    // Platform libraries
+    implementation 'com.yourcompany.platform:platform-core:3.0.0'
+
+    // Third-party dependencies (won't be analyzed)
+    implementation 'com.google.guava:guava:32.1.3-jre'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testImplementation 'io.vertx:vertx-junit5:4.4.6'
+}
+
+// Configure platform standards plugin
+platformStandards {
+    // Error Prone configuration for project sources
+    errorprone {
+        enabled = true
+    }
+
+    // Dependency analysis configuration
+    dependencyAnalysis {
+        enabled = true
+
+        scope {
+            // Only analyze internal company dependencies
+            includeGroups = ['com.yourcompany.wrappers', 'com.yourcompany.common']
+
+            // Don't analyze platform libraries themselves (they're already validated)
+            excludeGroups = ['com.yourcompany.platform']
+
+            // Which configurations to analyze
+            configurations = ['implementation', 'api']
+        }
+
+        sources {
+            // Require source JARs to be published
+            requireSourcesJar = true
+
+            // Don't fallback to Git cloning (can enable if needed)
+            fallbackToGitClone = false
+        }
+
+        analysis {
+            // Custom Error Prone checks to run on dependencies
+            errorProneChecks = [
+                'BannedPlatformApiUsage',
+                'ImproperVerticleDeployment',
+                'ThreadSafetyViolation'
+            ]
+
+            // Also run Checkstyle if desired
+            runCheckstyle = false
+
+            // Enable caching for faster builds
+            cacheEnabled = true
+        }
+
+        reporting {
+            // Block the build on violations
+            mode = 'BLOCK' // or 'WARN' for gradual rollout
+
+            // Fail the build on any violations
+            failOnViolation = true
+
+            // Generate detailed report
+            generateReport = true
+            reportFormat = 'HTML'
+
+            // Thresholds
+            maxErrors = 0      // No errors allowed
+            maxWarnings = 10   // Up to 10 warnings allowed
+        }
+
+        // Performance settings
+        parallel = true
+        maxWorkers = 4
+    }
+}
+
+// Standard Java configuration
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+test {
+    useJUnitPlatform()
+}

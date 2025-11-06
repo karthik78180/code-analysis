@@ -1,0 +1,15 @@
+rootProject.name = 'example-consumer-project'
+
+// Plugin management
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven {
+            url = 'https://artifactory.yourcompany.com/maven-internal'
+            credentials {
+                username = findProperty('artifactoryUser') ?: System.getenv('ARTIFACTORY_USER')
+                password = findProperty('artifactoryPassword') ?: System.getenv('ARTIFACTORY_PASSWORD')
+            }
+        }
+    }
+}
